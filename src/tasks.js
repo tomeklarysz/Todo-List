@@ -35,6 +35,5 @@ function createTask(title) {
     removeNotes, getCheck, setCheck, removeCheck };
 }
 
-// lists = [];
 
 export { createTask };
