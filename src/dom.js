@@ -1,10 +1,17 @@
 import { projectsStorage } from "./projects";
+import { createTask } from "./tasks";
 import './style.css';
 
 // dom as iife
 const dom = (function () {
   const content = document.getElementById('main-content');
   const sidebar = document.getElementById('sidebar');
+
+  // let currentList = projectsStorage.storage[0].lists[0];
+  let currentList = {};
+  function updateCurrentList(list) {
+    currentList = list;
+  }
 
   function removeAllChildNodes(parent) {
     while (parent.firstChild) {
@@ -23,10 +30,14 @@ const dom = (function () {
       item.textContent = task.getTitle();
       tasksList.appendChild(item);
     }
+    updateCurrentList(projectsStorage.storage[0].lists[0]);
+    console.log(`current list: ${currentList}`);
+    newTask();
   }
 
   function displayContent(list) {
     removeAllChildNodes(content);
+    console.log('yoooo');
     const h1 = document.createElement('h1');
     h1.textContent = list.getListTitle();
     content.appendChild(h1);
@@ -47,17 +58,53 @@ const dom = (function () {
     newTaskDiv.appendChild(newTaskBtn);
     newTaskBtn.addEventListener('click', () => {
       newTaskDiv.removeChild(newTaskBtn);
-      const taskInput = document.createElement('input');
-      taskInput.setAttribute('type', 'text');
-      taskInput.setAttribute('id', 'task');
-      taskInput.setAttribute('name', 'task');
-      taskInput.setAttribute('placeholder', 'check mails..');
-      taskInput.addEventListener("keyup", (event) => {
-        if (event.key === "Enter") {
-          /* finish this */
+      const form = document.createElement('form');
+      const tasksProperties = ['title', 'description', 'dueDate', 'priority', 'notes'];
+      for (const property of tasksProperties) {
+        const taskLabel = document.createElement('label');
+        const taskInput = document.createElement('input');
+        taskLabel.setAttribute('for', property);
+        taskLabel.textContent = property;
+        if (property == 'title') {
+          taskInput.setAttribute('required', '');
+          const span = document.createElement('span');
+          span.setAttribute('aria-label', 'required');
+          span.textContent = '*';
+          taskLabel.appendChild(span);
         }
+        if (property == 'dueDate') {
+          taskInput.setAttribute('type', 'date');
+        } else if (property == 'priority') {
+          taskInput.setAttribute('type', 'radio');
+          taskInput.setAttribute('value', 'High priority');
+        } else {
+          taskInput.setAttribute('type', 'text');
+        }
+        taskInput.setAttribute('id', property);
+        taskInput.setAttribute('name', property);
+        form.appendChild(taskLabel);
+        form.appendChild(taskInput);
+      }
+      const submitBtn = document.createElement('button');
+      submitBtn.textContent = 'Submit';
+      submitBtn.addEventListener("click", () => {
+        let newTask = createTask(form.querySelector('input').getAttribute('id'));
+        for (child in form.querySelectorAll('input')) {
+          property = child.getAttribute('id');
+          switch (property) {
+            case 'description':
+              newTask.setDescription(child.textContent);
+              break;
+            case 'dueDate':
+              newTask.setDueDate()
+          }
+        }
+        currentList.addTask(newTask);
+        console.log(`current list: ${currentList}`);
+        displayContent(currentList);
       });
-      newTaskDiv.appendChild(taskInput);
+      form.appendChild(submitBtn);
+      newTaskDiv.appendChild(form);
     });
     content.appendChild(newTaskDiv);
   }
@@ -75,7 +122,8 @@ const dom = (function () {
         listDiv.classList.add('list');
         listDiv.textContent = list.getListTitle();
         listDiv.addEventListener('click', () => {
-          displayContent(list);
+          updateCurrentList(list);
+          displayContent(currentList);
         });
         sidebar.appendChild(listDiv);
       }
@@ -83,7 +131,7 @@ const dom = (function () {
     }
   }
 
-  return { initialDisplayContent, newTask, displaySidebar };
+  return { initialDisplayContent, displaySidebar };
 })();
 
 export { dom };
