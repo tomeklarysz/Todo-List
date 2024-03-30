@@ -11,6 +11,10 @@ body, html {
   grid-template-columns: 1fr 4fr;
 }
 
+.project {
+  font-weight: 600;
+}
+
 #sidebar {
   grid-column: 1, 2;
   border: 2px solid red;
