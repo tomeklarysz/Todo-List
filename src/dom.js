@@ -1,5 +1,4 @@
 import { projectsStorage } from "./projects";
-import { createTask } from "./tasks";
 import './style.css';
 import { createTask } from "./tasks";
 
@@ -7,12 +6,6 @@ import { createTask } from "./tasks";
 const dom = (function () {
   const content = document.getElementById('main-content');
   const sidebar = document.getElementById('sidebar');
-
-  // let currentList = projectsStorage.storage[0].lists[0];
-  let currentList = {};
-  function updateCurrentList(list) {
-    currentList = list;
-  }
 
   function removeAllChildNodes(parent) {
     while (parent.firstChild) {
@@ -31,14 +24,11 @@ const dom = (function () {
       item.textContent = task.getTitle();
       tasksList.appendChild(item);
     }
-    updateCurrentList(projectsStorage.storage[0].lists[0]);
-    console.log(`current list: ${currentList}`);
-    newTask();
+    newTask(projectsStorage.storage[0].lists[0]);
   }
 
   function displayContent(list) {
     removeAllChildNodes(content);
-    console.log('yoooo');
     const h1 = document.createElement('h1');
     h1.textContent = list.getListTitle();
     content.appendChild(h1);
@@ -112,8 +102,7 @@ const dom = (function () {
         listDiv.classList.add('list');
         listDiv.textContent = list.getListTitle();
         listDiv.addEventListener('click', () => {
-          updateCurrentList(list);
-          displayContent(currentList);
+          displayContent(list);
         });
         sidebar.appendChild(listDiv);
       }
