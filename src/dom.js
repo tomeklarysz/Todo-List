@@ -78,7 +78,7 @@ const dom = (function () {
       const submitBtn = document.createElement('button');
       submitBtn.textContent = 'Submit';
       submitBtn.addEventListener('click', () => {
-        let newTask = createTask('any'); /* change it later */
+        let newTask = createTask(form.querySelector('input').value);
         list.addTask(newTask);
         displayContent(list);
       })
