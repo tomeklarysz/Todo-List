@@ -24,6 +24,7 @@ const dom = (function () {
       item.textContent = task.getTitle();
       tasksList.appendChild(item);
     }
+    newTask(projectsStorage.storage[0].lists[0]);
   }
 
   function displayContent(list) {
