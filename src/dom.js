@@ -1,5 +1,6 @@
 import { projectsStorage } from "./projects";
 import './style.css';
+import { createTask } from "./tasks";
 
 // dom as iife
 const dom = (function () {
@@ -37,27 +38,52 @@ const dom = (function () {
       item.textContent = task.getTitle();
       tasksList.appendChild(item);
     }
-    newTask();
+    newTask(list);
   }
 
-  function newTask() {
+  function newTask(list) {
     const newTaskDiv = document.createElement('div');
     const newTaskBtn = document.createElement('button');
     newTaskBtn.textContent = 'new task';
     newTaskDiv.appendChild(newTaskBtn);
     newTaskBtn.addEventListener('click', () => {
       newTaskDiv.removeChild(newTaskBtn);
-      const taskInput = document.createElement('input');
-      taskInput.setAttribute('type', 'text');
-      taskInput.setAttribute('id', 'task');
-      taskInput.setAttribute('name', 'task');
-      taskInput.setAttribute('placeholder', 'check mails..');
-      taskInput.addEventListener("keyup", (event) => {
-        if (event.key === "Enter") {
-          /* finish this */
+      const form = document.createElement('form');
+      const tasksProperties = ['title', 'description', 'dueDate', 'priority', 'notes'];
+      for (const property of tasksProperties) {
+        const taskLabel = document.createElement('label');
+        const taskInput = document.createElement('input');
+        taskLabel.setAttribute('for', property);
+        taskLabel.textContent = property;
+        if (property === 'title') {
+          taskInput.setAttribute('required', '');
+          const span = document.createElement('span');
+          span.setAttribute('aria-label', 'required');
+          span.textContent = '*';
+          taskLabel.appendChild(span);
         }
-      });
-      newTaskDiv.appendChild(taskInput);
+        if (property == 'dueDate') {
+          taskInput.setAttribute('type', 'date');
+        } else if (property == 'priority') {
+          taskInput.setAttribute('type', 'radio');
+          taskInput.setAttribute('value', 'High priority');
+        } else {
+          taskInput.setAttribute('type', 'text');
+        }
+        taskInput.setAttribute('id', property);
+        taskInput.setAttribute('name', property);
+        form.appendChild(taskLabel);
+        form.appendChild(taskInput);
+      }
+      const submitBtn = document.createElement('button');
+      submitBtn.textContent = 'Submit';
+      submitBtn.addEventListener('click', () => {
+        let newTask = createTask('any'); /* change it later */
+        list.addTask(newTask);
+        displayContent(list);
+      })
+      form.appendChild(submitBtn);
+      newTaskDiv.appendChild(form);
     });
     content.appendChild(newTaskDiv);
   }
@@ -79,11 +105,10 @@ const dom = (function () {
         });
         sidebar.appendChild(listDiv);
       }
-
     }
   }
 
-  return { initialDisplayContent, newTask, displaySidebar };
+  return { initialDisplayContent, displaySidebar };
 })();
 
 export { dom };
