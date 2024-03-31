@@ -12,18 +12,9 @@ const dom = (function () {
     }
   }
 
-  function initialDisplayContent() {
-    const h1 = document.createElement('h1');
-    h1.textContent = projectsStorage.storage[0].lists[0].getListTitle();
-    content.appendChild(h1);
-    const tasksList = document.createElement('ul');
-    content.appendChild(tasksList);
-    for (const task of projectsStorage.storage[0].lists[0].getTasks()) {
-      const item = document.createElement('li');
-      item.textContent = task.getTitle();
-      tasksList.appendChild(item);
-    }
-  }
+  const initialDisplayContent = () => {
+    displayContent(projectsStorage.storage[0].lists[0]);
+  } 
 
   function displayContent(list) {
     removeAllChildNodes(content);
@@ -37,10 +28,6 @@ const dom = (function () {
       item.textContent = task.getTitle();
       tasksList.appendChild(item);
     }
-    newTask();
-  }
-
-  function newTask() {
     const newTaskDiv = document.createElement('div');
     const newTaskBtn = document.createElement('button');
     newTaskBtn.textContent = 'new task';
@@ -83,7 +70,7 @@ const dom = (function () {
     }
   }
 
-  return { initialDisplayContent, newTask, displaySidebar };
+  return { initialDisplayContent, displaySidebar };
 })();
 
 export { dom };
