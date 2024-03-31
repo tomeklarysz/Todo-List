@@ -1,6 +1,7 @@
 import { projectsStorage } from "./projects";
 import { createTask } from "./tasks";
 import './style.css';
+import { createTask } from "./tasks";
 
 // dom as iife
 const dom = (function () {
@@ -48,10 +49,10 @@ const dom = (function () {
       item.textContent = task.getTitle();
       tasksList.appendChild(item);
     }
-    newTask();
+    newTask(list);
   }
 
-  function newTask() {
+  function newTask(list) {
     const newTaskDiv = document.createElement('div');
     const newTaskBtn = document.createElement('button');
     newTaskBtn.textContent = 'new task';
@@ -65,7 +66,7 @@ const dom = (function () {
         const taskInput = document.createElement('input');
         taskLabel.setAttribute('for', property);
         taskLabel.textContent = property;
-        if (property == 'title') {
+        if (property === 'title') {
           taskInput.setAttribute('required', '');
           const span = document.createElement('span');
           span.setAttribute('aria-label', 'required');
@@ -87,22 +88,11 @@ const dom = (function () {
       }
       const submitBtn = document.createElement('button');
       submitBtn.textContent = 'Submit';
-      submitBtn.addEventListener("click", () => {
-        let newTask = createTask(form.querySelector('input').getAttribute('id'));
-        for (child in form.querySelectorAll('input')) {
-          property = child.getAttribute('id');
-          switch (property) {
-            case 'description':
-              newTask.setDescription(child.textContent);
-              break;
-            case 'dueDate':
-              newTask.setDueDate()
-          }
-        }
-        currentList.addTask(newTask);
-        console.log(`current list: ${currentList}`);
-        displayContent(currentList);
-      });
+      submitBtn.addEventListener('click', () => {
+        let newTask = createTask(form.querySelector('input').value);
+        list.addTask(newTask);
+        displayContent(list);
+      })
       form.appendChild(submitBtn);
       newTaskDiv.appendChild(form);
     });
@@ -127,7 +117,6 @@ const dom = (function () {
         });
         sidebar.appendChild(listDiv);
       }
-
     }
   }
 
