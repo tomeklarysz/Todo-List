@@ -40,5 +40,11 @@ project2.addList(workList1);
 project2.addList(workList2);
 projectsStorage.addProject(project2);
 
+task1.setDescription('dishes need to be cleaned regularly');
+task1.setDueDate(new Date(2024, 5, 10));
+task1.setPriority();
+task1.setNotes('whateva bro');
+task1.setCheck();
+
 dom.initialDisplayContent();
 dom.displaySidebar();

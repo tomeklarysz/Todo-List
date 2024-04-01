@@ -13,18 +13,34 @@ const dom = (function () {
     }
   }
 
-  function initialDisplayContent() {
-    const h1 = document.createElement('h1');
-    h1.textContent = projectsStorage.storage[0].lists[0].getListTitle();
-    content.appendChild(h1);
-    const tasksList = document.createElement('ul');
-    content.appendChild(tasksList);
-    for (const task of projectsStorage.storage[0].lists[0].getTasks()) {
-      const item = document.createElement('li');
-      item.textContent = task.getTitle();
-      tasksList.appendChild(item);
+  function showTaskInfo(task) {
+    const taskInfo = document.createElement('div');
+    const title = document.createElement('p');
+    title.textContent = task.getTitle();
+    taskInfo.appendChild(title);
+
+    const description = document.createElement('div');
+    description.textContent = task.getDescription();
+    taskInfo.appendChild(description);
+
+    const dueDate = document.createElement('div');
+    dueDate.textContent = task.getDueDate();
+    taskInfo.appendChild(dueDate);
+
+    if (task.getPriority()) {
+      const priority = document.createElement('div');
+      priority.textContent = `High Priority`;
+      taskInfo.appendChild(priority);
     }
-    newTask(projectsStorage.storage[0].lists[0]);
+    const notes = document.createElement('div');
+    notes.textContent = task.getNotes();
+    taskInfo.appendChild(notes);
+
+    content.appendChild(taskInfo);
+  }
+
+  function initialDisplayContent() {
+    displayContent(projectsStorage.storage[0].lists[0]);
   }
 
   function displayContent(list) {
@@ -36,7 +52,14 @@ const dom = (function () {
     content.appendChild(tasksList);
     for (const task of list.getTasks()) {
       const item = document.createElement('li');
+      item.style.width = 'fit-content';
+      item.classList.add('task');
       item.textContent = task.getTitle();
+      item.addEventListener('click', () => {
+        removeAllChildNodes(content);
+        displayContent(list);
+        showTaskInfo(task);
+      });
       tasksList.appendChild(item);
     }
     newTask(list);
@@ -67,7 +90,6 @@ const dom = (function () {
           taskInput.setAttribute('type', 'date');
         } else if (property == 'priority') {
           taskInput.setAttribute('type', 'radio');
-          taskInput.setAttribute('value', 'High priority');
         } else {
           taskInput.setAttribute('type', 'text');
         }
@@ -80,6 +102,21 @@ const dom = (function () {
       submitBtn.textContent = 'Submit';
       submitBtn.addEventListener('click', () => {
         let newTask = createTask(form.querySelector('input').value);
+        let propertiesNodes = form.querySelectorAll('input');
+        let properties = {};
+        propertiesNodes.forEach((property) => {
+          if (property.getAttribute('id') === 'priority') {
+            properties[property.getAttribute('id')] = property.checked;
+          } else {
+            properties[property.getAttribute('id')] = property.value;
+          }
+        });
+        newTask.setDescription(properties['description']);
+        newTask.setDueDate(properties['dueDate']);
+        if (properties['priority']) {
+          newTask.setPriority();
+        }
+        newTask.setNotes(properties['notes']);
         list.addTask(newTask);
         displayContent(list);
       })

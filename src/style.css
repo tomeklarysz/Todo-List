@@ -15,7 +15,8 @@ body, html {
   font-weight: 600;
 }
 
-.list {
+.list,
+.task {
   cursor: pointer;
 }
 
